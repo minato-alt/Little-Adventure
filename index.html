@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Book We Haven't Finished Yet</title>
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+<div class="ambient"></div>
+<div class="motes" id="motes"></div>
+<div id="memoryGlitch" aria-hidden="true"><div class="glitch-caption" id="glitchCaption"></div></div>
+
+
+<!-- COZY GAME INTRO -->
+<div id="gameIntro" class="active" aria-label="The Little Adventure start screen">
+  <div class="game-moon"></div>
+  <div class="game-stars">
+    <span class="game-star"></span><span class="game-star"></span><span class="game-star"></span><span class="game-star"></span>
+    <span class="game-star"></span><span class="game-star"></span><span class="game-star"></span><span class="game-star"></span>
+  </div>
+  <div class="game-intro-content">
+    <div class="game-eyebrow">somewhere between a game and a little story</div>
+    <h1 class="game-title">The Little<br>Adventure</h1>
+    <p class="game-subtitle">There are a few things I seem to have misplaced.<br>Maybe you could help me find them?</p>
+    <button id="startGame" type="button" aria-label="Click to begin your adventure"><span>Click to Begin Your Adventure</span><i aria-hidden="true">✦</i></button>
+    <div class="game-hint">don't worry, it's not a very serious adventure</div>
+  </div>
+</div>
+
+<!-- OPENING MEMORY CUTSCENE -->
+<div id="openingCutscene" aria-hidden="true">
+  <div class="cutscene-sky"></div><div class="cutscene-moon"></div><div class="cutscene-hills"></div>
+  <div class="cutscene-fireflies"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="cinematic-scene" aria-hidden="true">
+    <div class="scene-window-glow"></div>
+    <div class="scene-table"><span class="scene-coffee"></span><span class="scene-phone"><i></i></span><span class="scene-movie"></span></div>
+    <div class="scene-connection"><span class="connection-dot"></span><span class="connection-dot"></span><span class="connection-dot"></span></div>
+    <div class="scene-moon-card"><span class="scene-moon-icon"></span><b>2:17 AM</b><small>still talking</small></div>
+    <div class="scene-note-card"><small>for my</small><strong>Cupcake ♡</strong><em>from your Icecream</em></div>
+  </div>
+  <div class="cutscene-copy">
+    <div class="cutscene-mark"><span>✦</span> SEVEN MONTHS <span>✦</span></div>
+    <div class="cutscene-line active" data-cut="0"><span class="cutscene-kicker">A screen apart.</span>Somehow, never really far.</div>
+    <div class="cutscene-line" data-cut="1"><span class="cutscene-kicker">Our kind of night.</span>Coffee. A movie. Then talking until neither of us wants to say goodnight.</div>
+    <div class="cutscene-line" data-cut="2"><span class="cutscene-kicker">Seven months of us.</span>And a little adventure made from the moments I never want to lose.</div>
+    <div class="cutscene-sub" id="cutsceneSub">For my Cupcake — from your Icecream. <span>Tonight, let's go find them.</span></div>
+  </div>
+  <div class="cutscene-memory-strip" aria-hidden="true"><span>coffee</span><i>•</i><span>movies</span><i>•</i><span>late nights</span><i>•</i><span>always us</span></div>
+  <button class="cutscene-skip" id="cutsceneSkip" type="button">Skip · Space</button>
+  <div class="cutscene-progress"><i class="active"></i><i></i><i></i></div>
+</div>
+
+<!-- COZY GAME WORLD -->
+<div id="gameWorld">
+  <canvas id="gameCanvas"></canvas>
+
+  <div class="game-ui">
+    <div class="game-hud-left">
+      <div class="game-location"><span class="hud-dot"></span><span id="gameLocationText">Somewhere, a little while ago...</span></div>
+      <div class="game-quest-panel" aria-live="polite">
+        <div class="quest-heading">
+          <span class="quest-emblem">✦</span>
+          <div>
+            <span class="quest-kicker">MEMORY TRAIL</span>
+            <span class="quest-name">A little adventure</span>
+          </div>
+          <strong id="gameProgress">0 / 7</strong>
+        </div>
+        <div class="quest-divider"></div>
+        <div class="quest-objective-label">CURRENT OBJECTIVE</div>
+        <div class="quest-title" id="questTitle">Find the missing pieces</div>
+        <div class="quest-sub" id="questSub">Wander, explore, and follow anything that feels familiar.</div>
+        <div class="quest-bar" id="questBar" aria-label="Memory progress">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+      </div>
+    </div>
+    <div class="game-ui-right">
+      <div class="game-controls"><span class="keycap">WASD</span> move <span class="keycap">E</span> interact</div>
+    </div>
+  </div>
+
+  <div id="gameMessage"></div>
+  <div id="interactionHint">Press E to look closer</div>
+
+  <div class="mobile-controls">
+    <button class="mobile-up" data-key="arrowup">↑</button>
+    <button class="mobile-left" data-key="arrowleft">←</button>
+    <button class="mobile-right" data-key="arrowright">→</button>
+    <button class="mobile-down" data-key="arrowdown">↓</button>
+  </div>
+  <button class="mobile-interact" id="mobileInteract">✦</button>
+
+  <!-- Generic discovery overlay -->
+  <div id="discoveryOverlay" class="discovery-overlay">
+    <div class="discovery-paper">
+      <div class="discovery-number" id="discoveryNumber">01 / 07</div>
+      <div class="discovery-label" id="discoveryLabel">first little piece</div>
+      <h2 class="discovery-title" id="discoveryTitle">So it begins.</h2>
+      <p class="discovery-text" id="discoveryText"></p>
+      <div class="discovery-signature">— Icecream</div>
+      <button id="closeDiscovery" class="discovery-close">Keep looking</button>
+    </div>
+  </div>
+
+  <!-- ACTIVITY 1: constellation memory -->
+  <div id="memoryPuzzle" class="memory-puzzle constellation-puzzle" aria-hidden="true">
+    <div class="puzzle-card" id="puzzleCard">
+      <button id="closePuzzle" class="puzzle-close" type="button">Step away</button>
+      <div class="puzzle-topline"><span class="puzzle-label">a little night sky</span><span id="puzzleStageCount">STEP 1 · 7</span></div>
+      <div class="constellation-heading">
+        <div>
+          <h2 class="puzzle-title" id="puzzleTitle">Seven little lights</h2>
+          <p class="puzzle-description" id="puzzleDescription">Seven months. Seven little lights. Each clue points to a memory that belongs to us. Find it, then let the sky remember it.</p>
+        </div>
+        <div class="constellation-counter" aria-hidden="true"><strong id="constellationCounterNumber">1</strong><span>of 7</span></div>
+      </div>
+      <div class="constellation-layout">
+        <aside class="constellation-guide">
+          <div class="guide-title">HOW TO PLAY</div>
+          <div class="guide-step"><i>1</i><span>Read the little memory clue.</span></div>
+          <div class="guide-step"><i>2</i><span>Pick the star that matches.</span></div>
+          <div class="guide-step"><i>3</i><span>Build our seven-star memory.</span></div>
+          <div class="guide-note">Wrong stars only wobble. Your progress stays.</div>
+        </aside>
+        <div class="constellation-main">
+          <div class="personal-clue" id="personalClue"><span>memory clue</span><strong>What do we usually have in our hands before the night really begins?</strong></div>
+          <div class="constellation-board" id="constellationBoard" aria-label="Interactive constellation"></div>
+          <div class="constellation-legend"><span class="legend-dot correct"></span><span>next memory</span><span class="legend-dot other"></span><span>other memories</span><span class="legend-dot lit"></span><span>connected</span></div>
+        </div>
+      </div>
+      <div id="puzzleStatus" class="puzzle-status">Look for the little cup-shaped glow.</div>
+      <div class="puzzle-progress" aria-label="Activity progress"><i class="active"></i></div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY 2: in-world memory glitch hunt -->
+  <div id="glitchHunt" class="memory-investigation" aria-hidden="true">
+    <div class="investigation-card glitch-card">
+      <button id="closeGlitchHunt" class="puzzle-close" type="button">Step away</button>
+      <div class="investigation-label">a memory that got the details wrong</div>
+      <h2>Fix our movie night</h2>
+      <p class="investigation-description">Someone rebuilt one of our nights from memory. Five details are wrong. Find them — and put the little things back the way they actually feel.</p>
+      <div class="glitch-room" id="glitchRoom" aria-label="Our movie night memory investigation">
+        <div class="room-window"><span></span><span></span><span></span></div>
+        <div class="room-title"><span>OUR LITTLE MOVIE NIGHT</span><b>memory reconstruction</b></div>
+        <div class="glitch-object-grid">
+          <button class="glitch-object" data-anomaly="clock" type="button"><b class="prop-icon prop-clock" aria-hidden="true"></b><small>2:15 PM</small><em>time</em></button>
+          <button class="glitch-object" data-anomaly="movie" type="button"><b class="prop-icon prop-movie" aria-hidden="true"></b><small>random rom-com</small><em>on screen</em></button>
+          <button class="glitch-object" data-anomaly="coffee" type="button"><b class="prop-icon prop-coffee" aria-hidden="true"></b><small>tea</small><em>in our mugs</em></button>
+          <button class="glitch-object" data-anomaly="study" type="button"><b class="prop-icon prop-book" aria-hidden="true"></b><small>books closed</small><em>beside the call</em></button>
+          <button class="glitch-object" data-anomaly="call" type="button"><b class="prop-icon prop-phone" aria-hidden="true"></b><small>goodnight 8 PM</small><em>our call</em></button>
+          <button class="glitch-object" data-anomaly="beach" type="button"><b class="prop-icon prop-wave" aria-hidden="true"></b><small>our beach</small><em>where we'd rather be</em></button>
+          <button class="glitch-object" data-anomaly="cupcake" type="button"><b class="prop-icon prop-cupcake" aria-hidden="true"></b><small>cupcake</small><em>this one feels right</em></button>
+        </div>
+        <div class="room-sill"></div>
+      </div>
+      <div class="investigation-status" id="glitchStatus">0 / 5 found · Think about what our nights are actually like.</div>
+      <div class="glitch-hint" id="glitchHint">Hint: one wrong detail is about the time, one about the movie, one about what we drink, and two are about the life around our calls.</div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY 3: final memory lock -->
+  <div id="finalLock" class="memory-investigation final-lock-overlay" aria-hidden="true">
+    <div class="investigation-card final-lock-card">
+      <button id="closeFinalLock" class="puzzle-close" type="button">Step away</button>
+      <div class="investigation-label">one last little lock</div>
+      <h2>Put our night back together</h2>
+      <p class="investigation-description">You already found the pieces. Now remember the rhythm: something warm to drink, something on the screen, then the part we somehow never want to end.</p>
+      <div class="lock-memory-clues" aria-label="The three memories that form the answer">
+        <div class="lock-clue"><span class="clue-number">01</span><i class="mini-glyph glyph-coffee" aria-hidden="true"></i><strong>Something warm</strong><small>the start of our nights</small></div>
+        <div class="lock-clue"><span class="clue-number">02</span><i class="mini-glyph glyph-movie" aria-hidden="true"></i><strong>Something on screen</strong><small>our movie together</small></div>
+        <div class="lock-clue"><span class="clue-number">03</span><i class="mini-glyph glyph-moon" aria-hidden="true"></i><strong>Something that lasts</strong><small>the talks after the movie</small></div>
+      </div>
+      <div class="lock-instruction"><span class="lock-ring-mark"></span><span>Choose a slot, then turn its memory dial until the three moments feel like <b>our usual night.</b></span></div>
+      <div class="final-lock-dials" id="finalLockDials">
+        <button class="final-dial" data-dial="0" type="button" aria-label="First memory slot"><strong></strong><small></small></button>
+        <button class="final-dial" data-dial="1" type="button" aria-label="Second memory slot"><strong></strong><small></small></button>
+        <button class="final-dial" data-dial="2" type="button" aria-label="Third memory slot"><strong></strong><small></small></button>
+      </div>
+      <div class="dial-options" id="dialOptions" aria-label="Memory choices">
+        <button data-symbol="coffee" type="button"><i class="memory-option-glyph glyph-coffee" aria-hidden="true"></i><span>coffee</span></button>
+        <button data-symbol="movie" type="button"><i class="memory-option-glyph glyph-movie" aria-hidden="true"></i><span>movie</span></button>
+        <button data-symbol="moon" type="button"><i class="memory-option-glyph glyph-moon" aria-hidden="true"></i><span>late night</span></button>
+        <button data-symbol="beach" type="button"><i class="memory-option-glyph glyph-beach" aria-hidden="true"></i><span>beach</span></button>
+        <button data-symbol="cupcake" type="button"><i class="memory-option-glyph glyph-cupcake" aria-hidden="true"></i><span>cupcake</span></button>
+        <button data-symbol="icecream" type="button"><i class="memory-option-glyph glyph-icecream" aria-hidden="true"></i><span>icecream</span></button>
+      </div>
+      <div id="finalLockStatus" class="investigation-status">Tap a dial, then choose what the memory left behind.</div>
+    </div>
+  </div>
+
+  <!-- Quiet mode (piece 5) -->
+  <div id="quietMode" class="quiet-mode">
+    <div class="quiet-message">
+      <div class="quiet-small">somewhere in the quiet</div>
+      <div class="quiet-title">Listen.</div>
+      <div class="quiet-hint">You might hear something familiar.</div>
+    </div>
+  </div>
+
+</div>
+
+<div id="notebookTransition" aria-hidden="true">
+  <div class="transition-glow"></div>
+  <div class="transition-sheet"></div>
+  <div class="transition-sheet"></div>
+  <div class="transition-copy">
+    <div class="transition-small">and then, the pieces found their place</div>
+    <div class="transition-title">The story continues.</div>
+    <div class="transition-sub">turning memories into pages</div>
+  </div>
+</div>
+
+<main class="book-stage" id="bookStage">
+  <div class="book">
+    <section class="page left" id="leftPage"></section>
+    <section class="page right" id="rightPage"></section>
+    <div class="spine"></div>
+  </div>
+</main>
+
+<div class="hint" id="hint">← previous &nbsp;&nbsp; · &nbsp;&nbsp; next → &nbsp;&nbsp; · &nbsp;&nbsp; drag the page</div>
+<button class="sound-toggle" id="soundToggle" aria-label="Toggle page sounds">♪</button>
+
+<div class="controls" id="controls">
+  <button class="nav" id="prev" aria-label="Previous page">←</button>
+  <div class="counter" id="counter">01 / 08</div>
+  <button class="nav" id="next" aria-label="Next page">→</button>
+</div>
+
+<div class="memory-overlay" id="memoryOverlay">
+  <div class="memory-card">
+    <button class="memory-close" id="memoryClose" aria-label="Close">✕</button>
+    <div id="memoryContent"></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
